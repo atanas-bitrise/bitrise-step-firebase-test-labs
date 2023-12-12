@@ -108,6 +108,12 @@ inputs:
        
        example: intgeration_test/login_test.dart
       is_required: true
+    - build_flavor: 
+    opts:
+      title: "Build flavor of app, example: dev, release, etc"
+      description: |
+       The build flavor variant of the app you want to test on
+      is_required: false
 
 outputs:
   - EXAMPLE_STEP_OUTPUT:
