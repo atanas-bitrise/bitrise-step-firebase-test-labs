@@ -70,6 +70,18 @@ echo_details "* test_apk_path: $test_apk_path"
 echo_details "* app_apk_path: $apk_path"
 echo_details "* project: $project_id"
 echo_details "* build_flavor: $build_flavor"
+echo_details "* ios_configuration: $ios_configuration"
+echo_details "* output_path: $output_path"
+echo_details "* product_path: $product_path"
+echo_details "* locale: $locale"
+echo_details "* simulator_model: $simulator_model"
+echo_details "* orientation: $orientation"
+echo_details "* workspace: $workspace"
+
+# Export Service Credentials File
+if [ -n "${service_account_credentials_file}" ] ; then
+    export GOOGLE_APPLICATION_CREDENTIALS="${service_credentials_file}"
+fi
 
 # Checking regular APK
 if [ -z "${apk_path}" ] ; then
@@ -99,7 +111,7 @@ case "${apk_path}" in
 esac
 
 if [ ! -f "${apk_path}" ] ; then
-    echo_fail "App path defined but the file does not exist at path: ${apk_path}"
+    echo_fail "App path is defined but the file does not exist at path: ${apk_path}"
 fi
 
 # Checking the androidTest APK
@@ -129,8 +141,12 @@ case "${test_apk_path}" in
        ;;
 esac
 
+if [ ! -f "${apk_path}" ] ; then
+    echo_fail "App apk path is defined but the file does not exist at path: ${test_apk_path}"
+fi
+
 if [ ! -f "${test_apk_path}" ] ; then
-    echo_fail "Test apk path defined but the file does not exist at path: ${test_apk_path}"
+    echo_fail "Test apk path is defined but the file does not exist at path: ${test_apk_path}"
 fi
 
 if [ -z "${project_id}" ] ; then
@@ -148,41 +164,41 @@ fi
 ##### Android Deploy #####
 echo_info "Deploying Android Tests to Firebase"
 
-pushd android
 # Flutter build generates files in android/ for building the app
-flutter build apk --flavor $dev --dart-define="FLAVOR=$dev"
-./gradlew app:assembleAndroidTest
-./gradlew app:assembleDebug -Ptarget=$integration_test_path
-popd
+#flutter build apk --flavor $build_flavor --dart-define="FLAVOR=$build_flavor"
+#./gradlew app:assembleAndroidTest
+#./gradlew app:assembleDebug -Ptarget=$integration_test_path
+
 
 # Deploy Android Tests
 gcloud auth activate-service-account --key-file=$service_account_credentials_file
 gcloud --quiet config set project $project_id
-gcloud firebase test android run --async  --type instrumentation \
+gcloud firebase test android run --async --type instrumentation \
   --app $apk_path\
   --test $test_apk_path\
   --timeout 2m \
   --results-dir="./"
   
 ##### iOS Deploy WIP #####
-#echo_info "Deploying iOS Tests to Firebase"
+echo_info "Deploying iOS Tests to Firebase"
 
-#flutter build ios --flavor dev --dart-define="FLAVOR=dev" $integration_test_path --release
+flutter build ios --flavor $build_flavor --dart-define="FLAVOR=$build_flavor" $integration_test_path --release
 
-#pushd ios
-#xcodebuild build-for-testing \
-#  -workspace Runner.xcworkspace \
-#  -scheme Runner \
-#  -xcconfig Flutter/Release.xcconfig \
-#  -configuration Release \
-#  -derivedDataPath \
-# $output -sdk iphoneos
-#popd
+pushd ios
+xcodebuild build-for-testing \
+  -workspace $workspace \
+  -scheme $build_flavor \
+  -xcconfig Flutter/Release.xcconfig \
+  -configuration $configuration \
+  -derivedDataPath \
+ $output_path -sdk iphoneos
+popd
 
-#pushd $product
-#zip -r ios_tests.zip . -i Release-iphoneos Runner_iphoneos17.0-arm64.xctestrun
-#popd
+pushd $product_path
+zip -r ios_tests.zip . -i Release-iphoneos Runner_iphoneos17.0-arm64.xctestrun
+popd
 
-#gcloud firebase test ios run --async \
-#    --test "build/ios_integ/Build/Products/dev_dev_iphoneos17.0.xctestrun" \
-#    --device model=iphone11pro,version=14.1,locale=fr_FR,orientation=portrait
+# Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
+gcloud firebase test ios run --async \
+    --test $product_path \
+    --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientation

@@ -59,6 +59,7 @@ type_tags:
 deps:
   brew:
   - name: google-cloud-sdk
+  - name: flutter
 
 is_always_run: false
 is_skippable: false
@@ -84,7 +85,7 @@ inputs:
         Firebase Project ID. Can be found in the console, under the project name in settings
       is_required: true
       is_sensitive: true
-  - apk_path: "$BITRISE_APK_PATH"
+  - apk_path: 
     opts:
       title: "Android APK Path"
       description: |
@@ -108,11 +109,59 @@ inputs:
        
        example: intgeration_test/login_test.dart
       is_required: true
-    - build_flavor: 
+  - build_flavor: 
     opts:
-      title: "Build flavor of app, example: dev, release, etc"
+      title: "Scheme or Build flavor of app, example: dev, release, etc - iOS only"
       description: |
-       The build flavor variant of the app you want to test on
+        The build flavor variant of the app you want to test on
+      is_required: false
+  - ios_configuration: 
+    opts:
+      title: "Specify a Configuration - iOS only"
+      description: |
+        
+      is_required: false
+  - output_path: ../build/ios_integ
+    opts:
+      title: "The path to the folder where the iOS integration executable will output - iOS only"
+      description: |
+        
+      is_required: false
+  - product_path: build/ios_integ/Build/Products
+    opts:
+      title: "The path to the zip folder containing a .xctestrun and a folder containing the .app to be deployed - iOS only"
+      description: |
+        
+      is_required: false
+  - locale: en_US
+    opts:
+      title: "Specify the Locale to test on - iOS only"
+      description: |
+        
+      is_required: false
+  - simulator_model: iphone11pro
+    opts:
+      title: "Specify the device the test is running on - iOS only"
+      description: |
+        
+      is_required: false
+  - orientation: portrait
+    opts:
+      title: "Specify the device orientation of the device the test is running on - iOS only"
+      description: |
+        
+      is_required: false
+  - workspace: Runner.xcworkspace
+    opts:
+      title: "Specify the iOS workspace - iOS only"
+      description: |
+        
+      is_required: false
+  - xcode_version: 15.0
+    opts:
+      title: "Specify the version of Xcode - iOS only"
+      description: |
+        
       is_required: false
 
 outputs:
