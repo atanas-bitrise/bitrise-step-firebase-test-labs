@@ -56,9 +56,6 @@ function echo_details {
     echo "  ${msg}"
 }
 
-
-
-
 #=======================================
 # Main
 #=======================================
@@ -69,7 +66,7 @@ echo_details "* service_credentials_file_path: $service_account_credentials_file
 echo_details "* test_apk_path: $test_apk_path"
 echo_details "* app_apk_path: $apk_path"
 echo_details "* project: $project_id"
-echo_details "* build_flavor: $build_flavor"
+echo_details "* scheme: $scheme"
 echo_details "* ios_configuration: $ios_configuration"
 echo_details "* output_path: $output_path"
 echo_details "* product_path: $product_path"
@@ -77,6 +74,7 @@ echo_details "* locale: $locale"
 echo_details "* simulator_model: $simulator_model"
 echo_details "* orientation: $orientation"
 echo_details "* workspace: $workspace"
+echo_details "* config_file_path: $config_file_path"
 
 # Export Service Credentials File
 if [ -n "${service_account_credentials_file}" ] ; then
@@ -157,17 +155,28 @@ if [ -z "${service_account_credentials_file}" ] ; then
     echo_fail "Service Account Credential File is not defined"
 fi
 
+if [[ $service_credentials_file == http* ]]; then
+          echo_info "Service Credentials File is a remote url, downloading it ..."
+          curl $service_credentials_file --output credentials.json
+          service_credentials_file=$(pwd)/credentials.json
+          echo_info "Downloaded Service Credentials File to path: ${service_credentials_file}"
+fi
+
 if [ ! -f "${service_account_credentials_file}" ] ; then
     echo_fail "Service Account Credential path is defined but the file does not exist at path: ${service_account_credentials_file}"
+fi
+
+if [ -z "${integration_test_path}" ] ; then
+    echo_fail "The path to the integration tests you'd like to deploy is not defined"
 fi
 
 ##### Android Deploy #####
 echo_info "Deploying Android Tests to Firebase"
 
 # Flutter build generates files in android/ for building the app
-#flutter build apk --flavor $build_flavor --dart-define="FLAVOR=$build_flavor"
-#./gradlew app:assembleAndroidTest
-#./gradlew app:assembleDebug -Ptarget=$integration_test_path
+flutter build apk --flavor $build_flavor --dart-define="FLAVOR=$build_flavor"
+./gradlew app:assembleAndroidTest
+./gradlew app:assembleDebug -Ptarget=$integration_test_path
 
 
 # Deploy Android Tests
@@ -180,25 +189,25 @@ gcloud firebase test android run --async --type instrumentation \
   --results-dir="./"
   
 ##### iOS Deploy WIP #####
-echo_info "Deploying iOS Tests to Firebase"
+#echo_info "Deploying iOS Tests to Firebase"
 
-flutter build ios --flavor $build_flavor --dart-define="FLAVOR=$build_flavor" $integration_test_path --release
+#flutter build ios --flavor $build_flavor --dart-define="FLAVOR=$build_flavor" $integration_test_path --release
 
-pushd ios
-xcodebuild build-for-testing \
-  -workspace $workspace \
-  -scheme $build_flavor \
-  -xcconfig Flutter/Release.xcconfig \
-  -configuration $configuration \
-  -derivedDataPath \
- $output_path -sdk iphoneos
-popd
+#pushd ios
+#xcodebuild build-for-testing -allowProvisioningUpdates \
+#  -workspace $workspace \
+#  -scheme $scheme \
+#  -xcconfig $config_file_path \
+#  -configuration $configuration \
+#  -derivedDataPath \
+# $output_path -sdk iphoneos
+#popd
 
-pushd $product_path
-zip -r ios_tests.zip . -i Release-iphoneos Runner_iphoneos17.0-arm64.xctestrun
-popd
+#pushd $product_path
+#zip -r ios_tests.zip . -i Release-iphoneos Runner_iphoneos17.0-arm64.xctestrun
+#popd
 
 # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
-gcloud firebase test ios run --async \
-    --test $product_path \
-    --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientation
+#gcloud firebase test ios run --async \
+#    --test $product_path \
+#    --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientation
