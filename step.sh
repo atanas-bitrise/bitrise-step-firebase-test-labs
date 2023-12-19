@@ -64,12 +64,11 @@ function echo_details {
 
 echo "Building Flutter APKs"
 # Flutter build generates files in android/ for building the app
+pushd android
 flutter build apk --flavor $build_flavor --dart-define="FLAVOR=$build_flavor"
 ./gradlew app:assembleAndroidTest
 ./gradlew app:assembleDebug -Ptarget=$integration_test_path
-
-
-
+popd
 
 echo_info "Configs:"
 echo_details "* service_credentials_file_path: $service_account_credentials_file"
