@@ -109,12 +109,21 @@ inputs:
        
        example: intgeration_test/login_test.dart
       is_required: true
+  - build_flavor:
+    opts:
+      title: "Build Flavor"
+      description: |
+        Specify a specific build flavor you'd like to use to build your project
+
+        https://docs.flutter.dev/deployment/flavors
+      is_required: false
   - scheme: Runner
     opts:
-      title: "Scheme or Build flavor of app"
+      title: "Schema"
       description: |
-        The build flavor variant of the app you want to test on
+        Specify an Xcode Schema you'd like to use for iOS 
         Run xcodebuild -list in the iOS directory to list available schemes for your project
+        By default, this is set to Runner
 
         example: Runner, dev, release, etc
       is_required: false

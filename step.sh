@@ -76,6 +76,7 @@ echo_details "* service_credentials_file_path: $service_account_credentials_file
 echo_details "* test_apk_path: $test_apk_path"
 echo_details "* app_apk_path: $apk_path"
 echo_details "* project: $project_id"
+echo_details "* build_flavor: $build_flavor"
 echo_details "* scheme: $scheme"
 echo_details "* ios_configuration: $ios_configuration"
 echo_details "* output_path: $output_path"
