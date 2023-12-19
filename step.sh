@@ -61,6 +61,16 @@ function echo_details {
 #=======================================
 #
 # Validate parameters
+
+echo "Building Flutter APKs"
+# Flutter build generates files in android/ for building the app
+flutter build apk --flavor $build_flavor --dart-define="FLAVOR=$build_flavor"
+./gradlew app:assembleAndroidTest
+./gradlew app:assembleDebug -Ptarget=$integration_test_path
+
+
+
+
 echo_info "Configs:"
 echo_details "* service_credentials_file_path: $service_account_credentials_file"
 echo_details "* test_apk_path: $test_apk_path"
@@ -172,12 +182,6 @@ fi
 
 ##### Android Deploy #####
 echo_info "Deploying Android Tests to Firebase"
-
-# Flutter build generates files in android/ for building the app
-flutter build apk --flavor $build_flavor --dart-define="FLAVOR=$build_flavor"
-./gradlew app:assembleAndroidTest
-./gradlew app:assembleDebug -Ptarget=$integration_test_path
-
 
 # Deploy Android Tests
 gcloud auth activate-service-account --key-file=$service_account_credentials_file

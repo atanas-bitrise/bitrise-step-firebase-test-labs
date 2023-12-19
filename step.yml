@@ -116,7 +116,7 @@ inputs:
         The build flavor variant of the app you want to test on
         Run xcodebuild -list in the iOS directory to list available schemes for your project
 
-        example: Runner, dev, release, etc - iOS only
+        example: Runner, dev, release, etc
       is_required: false
   - ios_configuration: Release
     opts:
