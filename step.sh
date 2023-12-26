@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ex
 
-echo "This is the value specified for the input 'example_step_input': ${example_step_input}"
-
 #
 # --- Export Environment Variables for other Steps:
 # You can export Environment Variables for other Steps with
@@ -72,7 +70,6 @@ popd
 
 echo_info "Configs:"
 echo_details "* service_credentials_file_path: $service_account_credentials_file"
-echo_details "* test_apk_path: $test_apk_path"
 echo_details "* app_apk_path: $apk_path"
 echo_details "* project: $project_id"
 echo_details "* build_flavor: $build_flavor"
@@ -85,11 +82,6 @@ echo_details "* simulator_model: $simulator_model"
 echo_details "* orientation: $orientation"
 echo_details "* workspace: $workspace"
 echo_details "* config_file_path: $config_file_path"
-
-# Export Service Credentials File
-if [ -n "${service_account_credentials_file}" ] ; then
-    export GOOGLE_APPLICATION_CREDENTIALS="${service_credentials_file}"
-fi
 
 # Checking regular APK
 if [ -z "${apk_path}" ] ; then
@@ -118,45 +110,6 @@ case "${apk_path}" in
        ;;
 esac
 
-if [ ! -f "${apk_path}" ] ; then
-    echo_fail "App path is defined but the file does not exist at path: ${apk_path}"
-fi
-
-# Checking the androidTest APK
-if [ -z "${test_apk_path}" ] ; then
-    echo_fail "App path for APK, AAB or IPA is not defined"
-fi
-
-case "${test_apk_path}" in
-    \|\|*)
-       echo_warn "App path starts with || . Manually fixing path: ${test_apk_path}"
-       test_apk_path="${test_apk_path:2}"
-       ;;
-    *\|\|)
-       echo_warn "App path ends with || . Manually fixing path: ${test_apk_path}"
-       test_apk_path="${test_apk_path%??}"
-       ;;
-    \|*\|)
-       echo_warn "App path starts and ends with | . Manually fixing path: ${test_apk_path}"
-       test_apk_path="${test_apk_path:1}"
-       test_apk_path="${test_apk_path%?}"
-       ;;
-    *\|*)
-       echo_fail "App path contains | . You need to make sure only one build path is set: ${test_apk_path}"
-       ;;
-    *)
-       echo_info "App path contains a file, great!! 👍"
-       ;;
-esac
-
-if [ ! -f "${apk_path}" ] ; then
-    echo_fail "App apk path is defined but the file does not exist at path: ${test_apk_path}"
-fi
-
-if [ ! -f "${test_apk_path}" ] ; then
-    echo_fail "Test apk path is defined but the file does not exist at path: ${test_apk_path}"
-fi
-
 if [ -z "${project_id}" ] ; then
     echo_fail "Firebase App ID is not defined"
 fi
@@ -165,11 +118,11 @@ if [ -z "${service_account_credentials_file}" ] ; then
     echo_fail "Service Account Credential File is not defined"
 fi
 
-if [[ $service_credentials_file == http* ]]; then
+if [[ $service_account_credentials_file == http* ]]; then
           echo_info "Service Credentials File is a remote url, downloading it ..."
-          curl $service_credentials_file --output credentials.json
-          service_credentials_file=$(pwd)/credentials.json
-          echo_info "Downloaded Service Credentials File to path: ${service_credentials_file}"
+          curl $service_account_credentials_file --output credentials.json
+          service_account_credentials_file=$(pwd)/credentials.json
+          echo_info "Downloaded Service Credentials File to path: ${service_account_credentials_file}"
 fi
 
 if [ ! -f "${service_account_credentials_file}" ] ; then
@@ -183,14 +136,43 @@ fi
 ##### Android Deploy #####
 echo_info "Deploying Android Tests to Firebase"
 
-# Deploy Android Tests
+
+pushd android
+if [ -z "${$BITRISE_APK_PATH}"] [&& -z "${build_flavor}" ] ; then
+    echo_info "APK not found, building APK"
+    flutter build apk 
+elif [ -z "${$BITRISE_APK_PATH}" ] [ && ! -z "${build_flavor}" ] ; then 
+    echo_info "APK not found, building APK with $build_flavor"
+    flutter build apk --flavor $build_flavor
+else 
+    echo_info "APK is already built, moving on!"
+fi
+
+./gradlew app:assembleAndroidTest
+./gradlew app:assembleDebug -Ptarget=$integration_test_path
+popd
+
+# Deploy Android Tests to Firebase
 gcloud auth activate-service-account --key-file=$service_account_credentials_file
 gcloud --quiet config set project $project_id
+if [  -z "${BITRISE_APK_PATH}" ] ; then 
 gcloud firebase test android run --async --type instrumentation \
-  --app $apk_path\
-  --test $test_apk_path\
+  --app $BITRISE_APK_PATH \
+  --test build/app/outputs/apk/androidTest/free/debug/app-debug-androidTest.apk \
   --timeout 2m \
   --results-dir="./"
+elif [ -z "${build_flavor}" ] ; then
+    gcloud firebase test android run --async --type instrumentation \
+    --app build/app/outputs/flutter-apk/app-release.apk \
+    --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+    --timeout 2m \
+    --results-dir="./"
+else
+    gcloud firebase test android run --async --type instrumentation \
+    --app build/app/outputs/flutter-apk/app-release.apk \
+    --test build/app/outputs/apk/androidTest/$build_flavor/debug/app-$build_flavor-debug-androidTest.apk \
+    --timeout 2m \
+    --results-dir="./"
   
 ##### iOS Deploy WIP #####
 #echo_info "Deploying iOS Tests to Firebase"

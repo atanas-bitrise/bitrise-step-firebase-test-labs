@@ -10,9 +10,12 @@
 title: |-
   Firebase Test Labs
 summary: |
-  Automatic deployment of iOS and Android tests to Firebase Test Labs (works with flutter)
+  Automatic deployment of iOS and Android Flutter Integration tests to Firebase Test Labs 
 description: |
-  Automatic deployment of iOS and Android tests to Firebase Test Labs (works with flutter)
+  Automatic deployment of iOS and Android Flutter Integration tests to Firebase Test Labs 
+  
+  Before using this step, ensure to go through the setup required to test your app on virtual devices
+  https://github.com/flutter/flutter/tree/main/packages/integration_test#android-device-testing
 website: https://github.com/AnthonyDadeWT/bitrise-step-firebase-test-labs
 source_code_url: https://github.com/AnthonyDadeWT/bitrise-step-firebase-test-labs
 support_url: https://github.com/AnthonyDadeWT/bitrise-step-firebase-test-labs/issues
@@ -82,24 +85,18 @@ inputs:
     opts:
       title: "Firebase Project ID"
       description: |
-        Firebase Project ID. Can be found in the Firebase console, under the project name in settings
+        Firebase Project ID. Can be found in the Firebase console, under the project name in Project settings
       is_required: true
       is_sensitive: true
-  - apk_path: 
+  - apk_path: $BITRISE_APK_PATH
     opts:
       title: "Android APK Path"
       description: |
        Path to the Android APK to be deployed
+       If you are building an APK in your workflow already, the default value should be used
+       If not, specify a path like the one below
        
        example: build/app/outputs/apk/dev/debug/app-dev-debug.apk
-      is_required: true
-  - test_apk_path: 
-    opts:
-      title: "androidTest APK Path"
-      description: |
-       Path to the androidTest APK to be deployed
-       
-       example: build/app/outputs/apk/androidTest/dev/debug/app-dev-debug-androidTest.apk
       is_required: true
   - integration_test_path: 
     opts:

@@ -3,3 +3,6 @@
 .vscode
 README.md.backup
 _tmp/
+.apk
+.json
+.txt
