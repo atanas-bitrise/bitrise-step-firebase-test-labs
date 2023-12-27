@@ -93,20 +93,20 @@ gcloud --quiet config set project $project_id
 
 if [ -z "${BITRISE_APK_PATH}" ] && [ -z "${build_flavor}" ] ; then 
 gcloud firebase test android run --async --type instrumentation \
-  --app ./build/app/outputs/apk/debug/app-debug.apk \
-  --test ./build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+  --app build/app/outputs/apk/debug/app-debug.apk \
+  --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
   --timeout 2m \
   --results-dir="./"
 elif [ -z "${build_flavor}" ] ; then
     gcloud firebase test android run --async --type instrumentation \
     --app $BITRISE_APK_PATH \
-    --test ./build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+    --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
     --timeout 2m \
     --results-dir="./"
 else
     gcloud firebase test android run --async --type instrumentation \
-    --app $BITRISE_APK_PATH \
-    --test ./build/app/outputs/apk/androidTest/$build_flavor/debug/app-$build_flavor-debug-androidTest.apk \
+    --app build/app/outputs/apk/$build_flavor/debug/app-$build_flavor-debug.apk \
+    --test build/app/outputs/apk/androidTest/$build_flavor/debug/app-$build_flavor-debug-androidTest.apk \
     --timeout 2m \
     --results-dir="./"
 fi
