@@ -69,48 +69,51 @@ if [ -z "${integration_test_path}" ] ; then
     echo "The path to the integration tests you'd like to deploy is not defined"
 fi
 
-##### Android Deployment #####
-echo "🚀 Deploying Android Tests to Firebase 🚀"
+if [ "${test_android}" == true] ; then
+    ##### Android Deployment #####
+    echo "🚀 Deploying Android Tests to Firebase 🚀"
 
-pushd android
-if [ -z "${BITRISE_APK_PATH}"] && [ -z "${build_flavor}" ] ; then
-    echo "APK not found, building APK"
-    flutter build apk 
-elif [ -z "${BITRISE_APK_PATH}" ] && [ ! -z "${build_flavor}" ] ; then 
-    echo "APK not found, building APK with $build_flavor"
-    flutter build apk --flavor $build_flavor
-else 
-    echo "APK is already built, moving on!"
-fi
+    pushd android
+    if [ -z "${BITRISE_APK_PATH}"] && [ -z "${build_flavor}" ] ; then
+        echo "APK not found, building APK"
+        flutter build apk 
+    elif [ -z "${BITRISE_APK_PATH}" ] && [ ! -z "${build_flavor}" ] ; then 
+        echo "APK not found, building APK with $build_flavor"
+        flutter build apk --flavor $build_flavor
+    else 
+        echo "APK is already built, moving on!"
+    fi
 
-./gradlew app:assembleAndroidTest
-./gradlew app:assembleDebug -Ptarget=$integration_test_path
-popd
+    ./gradlew app:assembleAndroidTest
+    ./gradlew app:assembleDebug -Ptarget=$integration_test_path
+    popd
 
 
-gcloud auth activate-service-account --key-file=$service_account_credentials_file
-gcloud --quiet config set project $project_id
+    gcloud auth activate-service-account --key-file=$service_account_credentials_file
+    gcloud --quiet config set project $project_id
 
-if [ -z "${BITRISE_APK_PATH}" ] && [ -z "${build_flavor}" ] ; then 
-gcloud firebase test android run --async --type instrumentation \
-  --app build/app/outputs/apk/debug/app-debug.apk \
-  --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-  --timeout 2m \
-  --results-dir="./"
-elif [ -z "${build_flavor}" ] ; then
+    if [ -z "${BITRISE_APK_PATH}" ] && [ -z "${build_flavor}" ] ; then 
     gcloud firebase test android run --async --type instrumentation \
-    --app $BITRISE_APK_PATH \
+    --app build/app/outputs/apk/debug/app-debug.apk \
     --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
     --timeout 2m \
     --results-dir="./"
-else
-    gcloud firebase test android run --async --type instrumentation \
-    --app build/app/outputs/apk/$build_flavor/debug/app-$build_flavor-debug.apk \
-    --test build/app/outputs/apk/androidTest/$build_flavor/debug/app-$build_flavor-debug-androidTest.apk \
-    --timeout 2m \
-    --results-dir="./"
+    elif [ -z "${build_flavor}" ] ; then
+        gcloud firebase test android run --async --type instrumentation \
+        --app $BITRISE_APK_PATH \
+        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+        --timeout 2m \
+        --results-dir="./"
+    else
+        gcloud firebase test android run --async --type instrumentation \
+        --app build/app/outputs/apk/$build_flavor/debug/app-$build_flavor-debug.apk \
+        --test build/app/outputs/apk/androidTest/$build_flavor/debug/app-$build_flavor-debug-androidTest.apk \
+        --timeout 2m \
+        --results-dir="./"
+    fi
 fi
-  
+
+if if [ "${test_ios}" == true] ; then
 ##### iOS Deploy WIP #####
 echo "🚀 Deploying iOS Tests to Firebase 🚀"
 
@@ -118,7 +121,7 @@ if [ -z "${build_flavor}" ] ; then
     flutter build ios $integration_test_path --release
 
     pushd ios
-    xcodebuild build-for-testing -allowProvisioningUpdates \
+    xcodebuild build-for-testing \
     -workspace $workspace \
     -scheme $scheme \
     -xcconfig $config_file_path \
@@ -140,11 +143,11 @@ else
     flutter build ios --flavor $build_flavor --dart-define="FLAVOR=$build_flavor" $integration_test_path --release
 
     pushd ios
-    xcodebuild build-for-testing -allowProvisioningUpdates \
+    xcodebuild build-for-testing \
     -workspace $workspace \
     -scheme $scheme \
     -xcconfig $config_file_path \
-    -configuration $configuration \
+    -configuration $configuration-$build_flavor \
     -derivedDataPath \
     $output_path -sdk iphoneos
     popd
