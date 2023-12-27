@@ -44,46 +44,19 @@ echo "* workspace: $workspace"
 echo "* config_file_path: $config_file_path"
 echo "* xcode_version: $xcode_version"
 
-# Checking regular APK
-if [ -z "${apk_path}" ] ; then
-    echo "The path for APK, AAB or IPA is not defined"
-fi
-
-case "${apk_path}" in
-    \|\|*)
-       echo "The app path starts with || . Manually fixing path: ${apk_path}"
-       apk_path="${apk_path:2}"
-       ;;
-    *\|\|)
-       echo "The app path ends with || . Manually fixing path: ${apk_path}"
-       apk_path="${apk_path%??}"
-       ;;
-    \|*\|)
-       echo "App path starts and ends with | . Manually fixing path: ${apk_path}"
-       apk_path="${apk_path:1}"
-       apk_path="${apk_path%?}"
-       ;;
-    *\|*)
-       echo "App path contains | . You need to make sure only one build path is set: ${apk_path}"
-       ;;
-    *)
-       echo "App path contains a file, great!! 👍"
-       ;;
-esac
-
-if [ -z "${project_id}" ] ; then
-    echo "Firebase App ID is not defined"
+if [[ $service_account_credentials_file == http* ]]; then
+          echo "Service Credentials File is a remote url, downloading it ..."
+          curl $service_account_credentials_file --output credentials.json
+          service_account_credentials_file=$(pwd)/credentials.json
+          echo "Downloaded Service Credentials File to path: ${service_account_credentials_file}"
 fi
 
 if [ -z "${service_account_credentials_file}" ] ; then
     echo "Service Account Credential File is not defined"
 fi
 
-if [[ $service_account_credentials_file == http* ]]; then
-          echo "Service Credentials File is a remote url, downloading it ..."
-          curl $service_account_credentials_file --output credentials.json
-          service_account_credentials_file=$(pwd)/credentials.json
-          echo "Downloaded Service Credentials File to path: ${service_account_credentials_file}"
+if [ -z "${project_id}" ] ; then
+    echo "Firebase App ID is not defined"
 fi
 
 if [ ! -f "${service_account_credentials_file}" ] ; then

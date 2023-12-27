@@ -85,7 +85,8 @@ inputs:
   opts:
     title: "Firebase Project ID"
     summary: |
-      Firebase Project ID. Can be found in the Firebase console, under the project name in Project settings
+      Firebase Project ID. Can be found in the Firebase console, under the project name in Project settings.
+      Note: this is NOT an App ID. There should only be one Project ID for your entire Firebase project, even if it includes multiple "apps".
     is_required: true
     is_sensitive: true
 - integration_test_path: 
