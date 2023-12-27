@@ -68,7 +68,7 @@ if [ -z "${integration_test_path}" ] ; then
 fi
 
 ##### Android Deployment #####
-echo "Deploying Android Tests to Firebase"
+echo "🚀 Deploying Android Tests to Firebase 🚀"
 
 pushd android
 if [ -z "${$BITRISE_APK_PATH}"] && [ -z "${build_flavor}" ] ; then
@@ -110,7 +110,7 @@ else
 fi
   
 ##### iOS Deploy WIP #####
-echo "Deploying iOS Tests to Firebase"
+echo "🚀 Deploying iOS Tests to Firebase 🚀"
 
 if [ -z "${build_flavor}" ] ; then
     flutter build ios $integration_test_path --release
