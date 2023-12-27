@@ -115,8 +115,8 @@ inputs:
       https://docs.flutter.dev/deployment/flavors
     is_required: false
 
-## iOS Configuration ##
-- ios_config: Release
+## iOS Configuration Category ##
+- ios_configuration: Release
   opts:
     category: iOS Configuration
     title: Xcode Build Configuration.
@@ -156,7 +156,7 @@ inputs:
     title: Locale
     summary: |
       Specify the Locale to test on 
-      example: en_US, fr_FR
+      example: "en_US", "fr_FR"
       [List of locales](https://help.sap.com/docs/SAP_BUSINESSOBJECTS_BUSINESS_INTELLIGENCE_PLATFORM/09382741061c40a989fae01e61d54202/46758c5e6e041014910aba7db0e91070.html)
     is_required: false
 - simulator_model: iphone11pro
