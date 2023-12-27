@@ -71,10 +71,10 @@ fi
 echo "Deploying Android Tests to Firebase"
 
 pushd android
-if [ -z "${$BITRISE_APK_PATH}"] [&& -z "${build_flavor}" ] ; then
+if [ -z "${$BITRISE_APK_PATH}"] && [ -z "${build_flavor}" ] ; then
     echo "APK not found, building APK"
     flutter build apk 
-elif [ -z "${$BITRISE_APK_PATH}" ] [ && ! -z "${build_flavor}" ] ; then 
+elif [ -z "${$BITRISE_APK_PATH}" ] && [ ! -z "${build_flavor}" ] ; then 
     echo "APK not found, building APK with $build_flavor"
     flutter build apk --flavor $build_flavor
 else 
