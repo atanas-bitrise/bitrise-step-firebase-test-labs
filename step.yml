@@ -121,6 +121,7 @@ inputs:
         The input value sets xcodebuild's `-configuration` option
   - build_flavor:
     opts:
+      category: iOS Configuration
       title: "Build Flavor"
       summary: |
         Specify a specific build flavor you'd like to use to build your project
@@ -129,7 +130,9 @@ inputs:
       is_required: false
   - scheme: Runner
     opts:
+      category: iOS Configuration
       title: "Schema"
+      summary: Specify an Xcode Schema you'd like to use for iOS 
       description: |
         Specify an Xcode Schema you'd like to use for iOS 
         Run xcodebuild -list in the iOS directory to list available schemes for your project
