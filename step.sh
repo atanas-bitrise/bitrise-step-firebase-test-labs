@@ -125,7 +125,7 @@ if [ "${test_ios}" == "true" ] ; then
         -workspace $workspace \
         -scheme $scheme \
         -xcconfig $config_file_path \
-        -configuration $configuration \
+        -configuration $ios_configuration \
         -derivedDataPath \
         $output_path -sdk iphoneos
         popd
@@ -140,14 +140,14 @@ if [ "${test_ios}" == "true" ] ; then
             --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientatio
 
     else
-        flutter build ios --flavor $build_flavor --dart-define="FLAVOR=$build_flavor" $integration_test_path --release
+        flutter build ios --flavor $build_flavor $integration_test_path --release
 
         pushd ios
         xcodebuild build-for-testing \
         -workspace $workspace \
         -scheme $scheme \
         -xcconfig $config_file_path \
-        -configuration $configuration-$build_flavor \
+        -configuration "$ios_configuration-$build_flavor" \
         -derivedDataPath \
         $output_path -sdk iphoneos
         popd

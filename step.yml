@@ -112,7 +112,7 @@ inputs:
     title: Build Flavor
     summary: |
       Specify a specific build flavor you'd like to use to build your project.
-      This should only be used on projects that have already setup flavors
+      This should only be used on projects that have already setup flavors, and you use --flavor <flavor> to build or run your project.
       https://docs.flutter.dev/deployment/flavors
     is_required: false
 
@@ -120,7 +120,7 @@ inputs:
 - ios_configuration: Release
   opts:
     category: iOS Configuration
-    title: Xcode Build Configuration.
+    title: Xcode Build Configuration
     summary: |-
       Xcode Build Configuration.
 
