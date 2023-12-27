@@ -88,24 +88,41 @@ inputs:
         Firebase Project ID. Can be found in the Firebase console, under the project name in Project settings
       is_required: true
       is_sensitive: true
+  - test_ios: true
+    opts:
+      title: "Run Tests on iOS Device?"
+      description: |
+       If you'd like to run your tests on an iOS device, set this to true. Otherwise set it to false
+  - test_android: true
+    opts:
+      title: "Run Tests on Android Device?"
+      description: |
+       If you'd like to run your tests on an Android device, set this to true. Otherwise set it to false
+  - integration_test_path: 
+    opts:
+      title: "Path to Integration Tests"
+      description: |
+       Path to all of the Flutter integration tests you'd like to deploy to Firebase Test Labs
+       
+       example: intgeration_test/foo.dart
+      is_required: true
+  - ios:
+    opts:
+    category: iOS
+    description: |
+      iOS properties
+      
+    title: iOS properties
   - apk_path: $BITRISE_APK_PATH
     opts:
       title: "Android APK Path"
       description: |
        Path to the Android APK to be deployed
-       If you are building an APK in your workflow already, the default value should be used
+       If you are already building the APK in your workflow already, the default value should be used
        If not, specify a path like the one below
        
-       example: build/app/outputs/apk/dev/debug/app-dev-debug.apk
-      is_required: true
-  - integration_test_path: 
-    opts:
-      title: "Path to integration tests"
-      description: |
-       Path to all of the Flutter integration tests to be deployed
-       
-       example: intgeration_test/login_test.dart
-      is_required: true
+       example: build/app/outputs/apk/debug/app-debug.apk
+      is_required: fasle
   - build_flavor:
     opts:
       title: "Build Flavor"
@@ -126,19 +143,19 @@ inputs:
       is_required: false
   - ios_configuration: Release
     opts:
-      title: "Specify a Configuration - iOS only"
+      title: "Specify a Build Configuration"
       description: |
         Run xcodebuild -list in the iOS directory to list available configurations for your project
       is_required: false
   - output_path: ../build/ios_integ
     opts:
-      title: "The path to the folder where the iOS integration executable will output - iOS only"
+      title: "The path to the folder where the iOS integration executable will output"
       description: |
         
       is_required: false
   - product_path: build/ios_integ/Build/Products
     opts:
-      title: "The path to the zip folder containing a .xctestrun and a folder containing the .app to be deployed - iOS only"
+      title: "The path to the zip folder containing a .xctestrun and a folder containing the .app to be deployed"
       description: |
         
       is_required: false
