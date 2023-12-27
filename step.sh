@@ -69,7 +69,7 @@ if [ -z "${integration_test_path}" ] ; then
     echo "The path to the integration tests you'd like to deploy is not defined"
 fi
 
-if [ $test_android == "true"] ; then
+if [ "${test_android}" == "true"] ; then
     ##### Android Deployment #####
     echo "🚀 Deploying Android Tests to Firebase 🚀"
 
@@ -113,7 +113,7 @@ if [ $test_android == "true"] ; then
     fi
 fi
 
-if [ $test_ios == "true"] ; then
+if [ "${test_ios}" == "true" ] ; then
     ##### iOS Deploy WIP #####
     echo "🚀 Deploying iOS Tests to Firebase 🚀"
 
