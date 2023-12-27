@@ -136,7 +136,7 @@ if [ "${test_ios}" == "true" ] ; then
 
         # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
         gcloud firebase test ios run --async \
-            --test $product_path \
+            --test $product_path/ios_tests.zip \
             --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientatio
 
     else
@@ -158,7 +158,7 @@ if [ "${test_ios}" == "true" ] ; then
 
         # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
         gcloud firebase test ios run --async \
-            --test $product_path \
+            --test $product_path/ios_tests.zip \
             --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientation
     fi
 fi
