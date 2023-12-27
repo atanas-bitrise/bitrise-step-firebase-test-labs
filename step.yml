@@ -97,12 +97,12 @@ inputs:
       
       example: intgeration_test/foo.dart
     is_required: true
-- test_ios: true
+- test_ios: "true"
   opts:
     title: "Run Tests on iOS Device?"
     summary: |
       If you'd like to run your tests on an iOS device, set this to true. Otherwise set it to false
-- test_android: true
+- test_android: "true"
   opts:
     title: "Run Tests on Android Device?"
     summary: |
