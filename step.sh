@@ -113,51 +113,52 @@ if [ "${test_android}" == true] ; then
     fi
 fi
 
-if if [ "${test_ios}" == true] ; then
-##### iOS Deploy WIP #####
-echo "🚀 Deploying iOS Tests to Firebase 🚀"
+if [ "${test_ios}" == true] ; then
+    ##### iOS Deploy WIP #####
+    echo "🚀 Deploying iOS Tests to Firebase 🚀"
 
-if [ -z "${build_flavor}" ] ; then
-    flutter build ios $integration_test_path --release
+    if [ -z "${build_flavor}" ] ; then
+        flutter build ios $integration_test_path --release
 
-    pushd ios
-    xcodebuild build-for-testing \
-    -workspace $workspace \
-    -scheme $scheme \
-    -xcconfig $config_file_path \
-    -configuration $configuration \
-    -derivedDataPath \
-    $output_path -sdk iphoneos
-    popd
+        pushd ios
+        xcodebuild build-for-testing \
+        -workspace $workspace \
+        -scheme $scheme \
+        -xcconfig $config_file_path \
+        -configuration $configuration \
+        -derivedDataPath \
+        $output_path -sdk iphoneos
+        popd
 
-    pushd $product_path
-    zip -r ios_tests.zip . -i Release-iphoneos Runner_iphoneos17.0-arm64.xctestrun
-    popd
+        pushd $product_path
+        zip -r ios_tests.zip . -i Release-iphoneos Runner_iphoneos17.0-arm64.xctestrun
+        popd
 
-    # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
-    gcloud firebase test ios run --async \
-        --test $product_path \
-        --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientatio
+        # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
+        gcloud firebase test ios run --async \
+            --test $product_path \
+            --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientatio
 
-else
-    flutter build ios --flavor $build_flavor --dart-define="FLAVOR=$build_flavor" $integration_test_path --release
+    else
+        flutter build ios --flavor $build_flavor --dart-define="FLAVOR=$build_flavor" $integration_test_path --release
 
-    pushd ios
-    xcodebuild build-for-testing \
-    -workspace $workspace \
-    -scheme $scheme \
-    -xcconfig $config_file_path \
-    -configuration $configuration-$build_flavor \
-    -derivedDataPath \
-    $output_path -sdk iphoneos
-    popd
+        pushd ios
+        xcodebuild build-for-testing \
+        -workspace $workspace \
+        -scheme $scheme \
+        -xcconfig $config_file_path \
+        -configuration $configuration-$build_flavor \
+        -derivedDataPath \
+        $output_path -sdk iphoneos
+        popd
 
-    pushd $product_path
-    zip -r ios_tests.zip . -i Release-$build_flavor-iphoneos Runner_iphoneos17.0-arm64.xctestrun
-    popd
+        pushd $product_path
+        zip -r ios_tests.zip . -i Release-$build_flavor-iphoneos Runner_iphoneos17.0-arm64.xctestrun
+        popd
 
-    # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
-    gcloud firebase test ios run --async \
-        --test $product_path \
-        --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientation
+        # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
+        gcloud firebase test ios run --async \
+            --test $product_path \
+            --device model=$simulator_model,version=$xcode_version,locale=$locale,orientation=$orientation
+    fi
 fi
