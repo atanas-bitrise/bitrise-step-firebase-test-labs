@@ -88,6 +88,14 @@ inputs:
         Firebase Project ID. Can be found in the Firebase console, under the project name in Project settings
       is_required: true
       is_sensitive: true
+  - integration_test_path: 
+    opts:
+      title: "Path to Integration Tests"
+      description: |
+       Path to all of the Flutter integration tests you'd like to deploy to Firebase Test Labs
+       
+       example: intgeration_test/foo.dart
+      is_required: true
   - test_ios: true
     opts:
       title: "Run Tests on iOS Device?"
@@ -98,21 +106,13 @@ inputs:
       title: "Run Tests on Android Device?"
       description: |
        If you'd like to run your tests on an Android device, set this to true. Otherwise set it to false
-  - integration_test_path: 
-    opts:
-      title: "Path to Integration Tests"
-      description: |
-       Path to all of the Flutter integration tests you'd like to deploy to Firebase Test Labs
-       
-       example: intgeration_test/foo.dart
-      is_required: true
   - ios:
     opts:
-    category: iOS
-    description: |
-      iOS properties
-      
-    title: iOS properties
+      category: iOS
+      description: |
+        iOS properties
+        
+      title: iOS properties
   - apk_path: $BITRISE_APK_PATH
     opts:
       title: "Android APK Path"
