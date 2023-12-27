@@ -140,20 +140,20 @@ inputs:
     is_required: false
 - output_path: ../build/ios_integ
   opts:
-    title: Output Path
     category: iOS Configuration
+    title: Output Path
     summary: The path to the folder where the iOS integration executable will output
     is_required: false
 - product_path: build/ios_integ/Build/Products
   opts:
-    title: Product Path
     category: iOS Configuration
+    title: Product Path
     summary: "The path to the zip folder containing a .xctestrun and a folder containing the .app to be deployed"
     is_required: false
 - locale: en_US
   opts:
-    title: Locale
     category: iOS Configuration
+    title: Locale
     summary: |
       Specify the Locale to test on 
       example: en_US, fr_FR
@@ -161,32 +161,32 @@ inputs:
     is_required: false
 - simulator_model: iphone11pro
   opts:
-    title: Specify Device
     category: iOS Configuration
+    title: Specify Device
     summary: Specify the device the tests will run on
     is_required: false
 - orientation: portrait
   opts:
-    title: Orientation
     category: iOS Configuration
+    title: Orientation
     summary: Specify the device orientation of the device the test is running on
     is_required: false
 - workspace: Runner.xcworkspace
   opts:
-    title: xcworkspace File
     category: iOS Configuration
+    title: xcworkspace File
     summary: Specify the iOS workspace
     is_required: false
 - config_file_path: Flutter/Release.xcconfig
   opts:
-    title: Path to .xcconfig
     category: iOS Configuration
+    title: Path to .xcconfig
     summary: The path that points to the .xcconfig you'd like to use
     is_required: false
 - xcode_version: 15.0
   opts:
-    title: "Xcode Version"
     category: iOS Configuration
+    title: "Xcode Version"
     summary: Specify a version of Xcode
     is_required: false
 
