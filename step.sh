@@ -69,6 +69,10 @@ if [ -z "${integration_test_path}" ] ; then
     echo "The path to the integration tests you'd like to deploy is not defined"
 fi
 
+# Authenticate and set project
+gcloud auth activate-service-account --key-file=$service_account_credentials_file
+gcloud --quiet config set project $project_id
+
 if [ "${test_android}" == "true" ] ; then
     ##### Android Deployment #####
     echo "🚀 Deploying Android Tests to Firebase 🚀"
@@ -87,10 +91,6 @@ if [ "${test_android}" == "true" ] ; then
     ./gradlew app:assembleAndroidTest
     ./gradlew app:assembleDebug -Ptarget=$integration_test_path
     popd
-
-
-    gcloud auth activate-service-account --key-file=$service_account_credentials_file
-    gcloud --quiet config set project $project_id
 
     if [ -z "${BITRISE_APK_PATH}" ] && [ -z "${build_flavor}" ] ; then 
     gcloud firebase test android run --async --type instrumentation \
