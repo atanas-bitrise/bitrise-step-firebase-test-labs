@@ -106,33 +106,30 @@ inputs:
     title: "Run Tests on Android Device?"
     summary: |
       If you'd like to run your tests on an Android device, set this to true. Otherwise set it to false
-
+- build_flavor:
+  opts:
+    title: Build Flavor
+    summary: |
+      Specify a specific build flavor you'd like to use to build your project.
+      This should only be used on projects that have already setup flavors
+      https://docs.flutter.dev/deployment/flavors
+    is_required: false
 
 ## iOS Configuration ##
 - ios_config: Release
   opts:
     category: iOS Configuration
-    title: 
-    summary: Xcode Build Configuration.
-    description: |-
+    title: Xcode Build Configuration.
+    summary: |-
       Xcode Build Configuration.
 
       If not specified, the default Build Configuration will be used.
-      Use xcodebuild -list to see available configurations for your project
-      The input value sets xcodebuild's `-configuration` option
-- build_flavor:
-  opts:
-    category: iOS Configuration
-    title: "Build Flavor"
-    summary: |
-      Specify a specific build flavor you'd like to use to build your project
-      This should only be used on projects that have already setup flavors
-      https://docs.flutter.dev/deployment/flavors
-    is_required: false
+      Use xcodebuild -list to see available configurations for your project.
+      The input value sets xcodebuild's `-configuration` option.
 - scheme: Runner
   opts:
     category: iOS Configuration
-    title: "Schema"
+    title: Schema
     summary: Specify an Xcode Schema you'd like to use for iOS 
     description: |
       Specify an Xcode Schema you'd like to use for iOS 
@@ -141,74 +138,49 @@ inputs:
 
       example: Runner, dev, release, etc
     is_required: false
-
-
-- apk_path: $BITRISE_APK_PATH
-  opts:
-    title: "Android APK Path"
-    description: |
-      Path to the Android APK to be deployed
-      If you are already building the APK in your workflow already, the default value should be used
-      If not, specify a path like the one below
-      
-      example: build/app/outputs/apk/debug/app-debug.apk
-    is_required: fasle
-- ios_configuration: Release
-  opts:
-    title: "Specify a Build Configuration"
-    description: |
-      Run xcodebuild -list in the iOS directory to list available configurations for your project
-    is_required: false
 - output_path: ../build/ios_integ
   opts:
-    title: "The path to the folder where the iOS integration executable will output"
-    description: |
-      
+    title: Output Path
+    summary: The path to the folder where the iOS integration executable will output
     is_required: false
 - product_path: build/ios_integ/Build/Products
   opts:
-    title: "The path to the zip folder containing a .xctestrun and a folder containing the .app to be deployed"
-    description: |
-      
+    title: Product Path
+    summary: "The path to the zip folder containing a .xctestrun and a folder containing the .app to be deployed"
     is_required: false
 - locale: en_US
   opts:
-    title: "Specify the Locale to test on - iOS only"
-    description: |
+    title: Locale
+    summary: |
+      Specify the Locale to test on 
       example: en_US, fr_FR
       [List of locales](https://help.sap.com/docs/SAP_BUSINESSOBJECTS_BUSINESS_INTELLIGENCE_PLATFORM/09382741061c40a989fae01e61d54202/46758c5e6e041014910aba7db0e91070.html)
     is_required: false
 - simulator_model: iphone11pro
   opts:
-    title: "Specify the device the test is running on - iOS only"
-    description: |
-      
+    title: Specify Device
+    summary: Specify the device the tests will run on
     is_required: false
 - orientation: portrait
   opts:
-    title: "Specify the device orientation of the device the test is running on - iOS only"
-    description: |
-      
+    title: Orientation
+    summary: Specify the device orientation of the device the test is running on
     is_required: false
 - workspace: Runner.xcworkspace
   opts:
-    title: "Specify the iOS workspace - iOS only"
-    description: |
+    title: xcworkspace File
+    summary: Specify the iOS workspace
       
     is_required: false
 - config_file_path: Flutter/Release.xcconfig
   opts:
-    title: "Path to .xcconfig"
-    description: |
-      The path that points to the .xcconfig you'd like to use
-
-      example: Flutter/Release.xcconfig
+    title: Path to .xcconfig
+    summary: The path that points to the .xcconfig you'd like to use
     is_required: false
 - xcode_version: 15.0
   opts:
-    title: "Specify the version of Xcode - iOS only"
-    description: |
-      
+    title: "Xcode Version"
+    summary: Specify a version of Xcode
     is_required: false
 
 outputs:
