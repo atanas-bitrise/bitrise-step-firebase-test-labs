@@ -106,13 +106,13 @@ inputs:
       title: "Run Tests on Android Device?"
       description: |
        If you'd like to run your tests on an Android device, set this to true. Otherwise set it to false
-  - ios:
+  - default_certificate_passphrase: $BITRISE_DEFAULT_CERTIFICATE_PASSPHRASE
     opts:
-      category: iOS
+      category: Default code signing files
       description: |
-        iOS properties
-        
-      title: iOS properties
+        Certificate passphrase of the default certificate.
+      is_sensitive: true
+      title: Default certificate passphrase
   - apk_path: $BITRISE_APK_PATH
     opts:
       title: "Android APK Path"
