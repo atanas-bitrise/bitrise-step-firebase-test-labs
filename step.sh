@@ -70,7 +70,7 @@ if [ -z "${integration_test_path}" ] ; then
     echo "The path to the integration tests you'd like to deploy is not defined"
 fi
 
-# Authenticate and set project
+# Authenticate to Firebase and set project
 gcloud auth activate-service-account --key-file=$service_account_credentials_file
 gcloud --quiet config set project $project_id
 
@@ -78,6 +78,8 @@ gcloud --quiet config set project $project_id
 if [ "${test_android}" == "true" ] ; then
     
     pushd android
+
+    # Check if APK is already built
     if [ -z "${BITRISE_APK_PATH}"] && [ -z "${build_flavor}" ] ; then
         echo "APK not found, building APK"
         flutter build apk 
@@ -88,6 +90,7 @@ if [ "${test_android}" == "true" ] ; then
         echo "APK is already built, moving on!"
     fi
 
+    # Build androidTest APK
     ./gradlew app:assembleAndroidTest
     ./gradlew app:assembleDebug -Ptarget=$integration_test_path
     popd
@@ -95,23 +98,28 @@ if [ "${test_android}" == "true" ] ; then
     echo "🚀 Deploying Android Tests to Firebase 🚀"
     
     if [ -z "${BITRISE_APK_PATH}" ] && [ -z "${build_flavor}" ] ; then 
+
     gcloud firebase test android run --async --type instrumentation \
     --app build/app/outputs/apk/debug/app-debug.apk \
     --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
     --timeout 2m \
     --results-dir="./"
+
     elif [ -z "${build_flavor}" ] ; then
+    
         gcloud firebase test android run --async --type instrumentation \
         --app $BITRISE_APK_PATH \
         --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
         --timeout 2m \
         --results-dir="./"
+
     else
         gcloud firebase test android run --async --type instrumentation \
         --app build/app/outputs/apk/$build_flavor/debug/app-$build_flavor-debug.apk \
         --test build/app/outputs/apk/androidTest/$build_flavor/debug/app-$build_flavor-debug-androidTest.apk \
         --timeout 2m \
         --results-dir="./"
+        
     fi
 fi
 
@@ -121,6 +129,7 @@ if [ "${test_ios}" == "true" ] ; then
     echo "🚀 Deploying iOS Tests to Firebase 🚀"
 
     if [ -z "${build_flavor}" ] ; then
+
         flutter build ios $integration_test_path --release
 
         pushd ios
@@ -143,9 +152,12 @@ if [ "${test_ios}" == "true" ] ; then
             --device model=$simulator_model,version=$$xcode_version,locale=$locale,orientation=$orientatio
 
     else
+        echo "Building iOS with flavor: $build_flavor"
+
         flutter build ios --flavor $build_flavor $integration_test_path --release
 
         pushd ios
+
         xcodebuild build-for-testing \
         -workspace $workspace \
         -scheme $scheme \
@@ -153,12 +165,15 @@ if [ "${test_ios}" == "true" ] ; then
         -configuration "$ios_configuration-$build_flavor" \
         -derivedDataPath \
         $output_path -sdk iphoneos
+
         popd
 
         pushd $product_path
-        echo "checking folder"
-        ls
 
+        echo "Generated the following products:"
+        ls
+        
+        # Zip the products
         if [ "${build_flavor}" == "${scheme}" ] ; then
             zip -r "ios_tests.zip" "Release-$build_flavor-iphoneos" "${build_flavor}_${build_flavor}_iphoneos$deployment_target-arm64.xctestrun"
         else
