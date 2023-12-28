@@ -131,7 +131,7 @@ if [ "${test_ios}" == "true" ] ; then
         popd
 
         pushd $product_path
-        zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
+        zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$xcode_version-arm64.xctestrun"
         popd
 
         # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
@@ -153,7 +153,7 @@ if [ "${test_ios}" == "true" ] ; then
         popd
 
         pushd $product_path
-        zip -r "ios_tests.zip" "Release-$build_flavor-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
+        zip -r "ios_tests.zip" "Release-$build_flavor-iphoneos" "Runner_iphoneos$xcode_version-arm64.xctestrun"
         popd
 
         # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
