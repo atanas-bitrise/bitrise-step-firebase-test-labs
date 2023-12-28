@@ -79,6 +79,11 @@ inputs:
     title: "Service Account Credentials File"
     summary: |
       The path or HTTP URL to your [service account](https://firebase.google.com/docs/app-distribution/android/distribute-gradle#authenticate_using_a_service_account) private key JSON file.
+    description: |
+      Follow the documentation hyperlinked above to setup a service account.
+
+      You can avoid pushing this JSON file to your repository by storing the JSON contents as a secret, then in a custom script,
+      create a new file, and echo the contents of that secret into the file, and then set this input to that file path.
     is_required: true
     is_sensitive: true
 - project_id: 
@@ -86,6 +91,7 @@ inputs:
     title: "Firebase Project ID"
     summary: |
       Firebase Project ID. Can be found in the Firebase console, under the project name in Project settings.
+      
       Note: this is NOT an App ID. There should only be one Project ID for your entire Firebase project, even if it includes multiple "apps".
     is_required: true
     is_sensitive: true
@@ -118,7 +124,9 @@ inputs:
     title: Build Flavor
     summary: |
       Specify a specific build flavor you'd like to use to build your project.
+
       This should only be used on projects that have already setup flavors, and you use --flavor <flavor> to build or run your project.
+
       https://docs.flutter.dev/deployment/flavors
     is_required: false
 

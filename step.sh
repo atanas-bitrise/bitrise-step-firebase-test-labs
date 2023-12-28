@@ -156,6 +156,8 @@ if [ "${test_ios}" == "true" ] ; then
         popd
 
         pushd $product_path
+        echo "checking folder"
+        ls
         zip -r "ios_tests.zip" "Release-$build_flavor-iphoneos" "Runner_iphoneos$deployment_target-arm64.xctestrun"
         popd
 
