@@ -158,7 +158,13 @@ if [ "${test_ios}" == "true" ] ; then
         pushd $product_path
         echo "checking folder"
         ls
-        zip -r "ios_tests.zip" "Release-$build_flavor-iphoneos" "${build_flavor}_${build_flavor}_iphoneos$deployment_target-arm64.xctestrun"
+
+        if [ "${build_flavor}" == "${scheme}" ] ; then
+            zip -r "ios_tests.zip" "Release-$build_flavor-iphoneos" "${build_flavor}_${build_flavor}_iphoneos$deployment_target-arm64.xctestrun"
+        else
+            zip -r "ios_tests.zip" "Release-$build_flavor-iphoneos" "Runner_iphoneos$deployment_target-arm64.xctestrun"
+        fi
+
         popd
 
         # Running this command asynchrounsly avoids wasting runtime on waiting for test results to come back
