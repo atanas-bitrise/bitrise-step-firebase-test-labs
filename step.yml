@@ -100,11 +100,17 @@ inputs:
 - test_ios: "true"
   opts:
     title: "Run Tests on iOS Device?"
+    value_options:
+    - "true"
+    - "false"
     summary: |
       If you'd like to run your tests on an iOS device, set this to true. Otherwise set it to false
 - test_android: "true"
   opts:
     title: "Run Tests on Android Device?"
+    value_options:
+    - "true"
+    - "false"
     summary: |
       If you'd like to run your tests on an Android device, set this to true. Otherwise set it to false
 - build_flavor:
@@ -117,6 +123,12 @@ inputs:
     is_required: false
 
 ## iOS Configuration Category ##
+- deployment_target: "17.0"
+  opts:
+    category: iOS Configuration
+    title: iOS Deployment Target
+    summary: iOS Deployment Target, found under the "Info" tab after selecting the Runner Project
+    is_required: true
 - ios_configuration: Release
   opts:
     category: iOS Configuration
@@ -127,6 +139,7 @@ inputs:
       If not specified, the default Build Configuration will be used.
       Use xcodebuild -list to see available configurations for your project.
       The input value sets xcodebuild's `-configuration` option.
+    is_required: true
 - scheme: Runner
   opts:
     category: iOS Configuration
@@ -138,19 +151,19 @@ inputs:
       By default, this is set to Runner
 
       example: Runner, dev, release, etc
-    is_required: false
+    is_required: true
 - output_path: ../build/ios_integ
   opts:
     category: iOS Configuration
     title: Output Path
     summary: The path to the folder where the iOS integration executable will output
-    is_required: false
+    is_required: true
 - product_path: build/ios_integ/Build/Products
   opts:
     category: iOS Configuration
     title: Product Path
     summary: "The path to the zip folder containing a .xctestrun and a folder containing the .app to be deployed"
-    is_required: false
+    is_required: true
 - locale: en_US
   opts:
     category: iOS Configuration
@@ -159,37 +172,37 @@ inputs:
       Specify the Locale to test on 
       example: "en_US", "fr_FR"
       [List of locales](https://help.sap.com/docs/SAP_BUSINESSOBJECTS_BUSINESS_INTELLIGENCE_PLATFORM/09382741061c40a989fae01e61d54202/46758c5e6e041014910aba7db0e91070.html)
-    is_required: false
+    is_required: true
 - simulator_model: iphone11pro
   opts:
     category: iOS Configuration
     title: Specify Device
     summary: Specify the device the tests will run on
-    is_required: false
+    is_required: true
 - orientation: portrait
   opts:
     category: iOS Configuration
     title: Orientation
     summary: Specify the device orientation of the device the test is running on
-    is_required: false
+    is_required: true
 - workspace: Runner.xcworkspace
   opts:
     category: iOS Configuration
     title: xcworkspace File
     summary: Specify the iOS workspace
-    is_required: false
+    is_required: true
 - config_file_path: Flutter/Release.xcconfig
   opts:
     category: iOS Configuration
     title: Path to .xcconfig
     summary: The path that points to the .xcconfig you'd like to use
-    is_required: false
+    is_required: true
 - xcode_version: 15.0
   opts:
     category: iOS Configuration
     title: "Xcode Version"
     summary: Specify a version of Xcode
-    is_required: false
+    is_required: true
 
 outputs:
 - EXAMPLE_STEP_OUTPUT:
