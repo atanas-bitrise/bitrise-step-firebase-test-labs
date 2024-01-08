@@ -8,9 +8,9 @@ app:
   - SERVICE_ACCOUNT_CREDENTIALS_FILE: $SERVICE_ACCOUNT_CREDENTIALS_FILE_PATH
   - PROJECT_ID: $FIREBASE_PROJECT_ID
   # If you want to share this step into a StepLib
-  - BITRISE_STEP_ID: firebase-test-labs
-  - BITRISE_STEP_VERSION: "0.0.1"
-  - BITRISE_STEP_GIT_CLONE_URL: https://github.com/AnthonyDadeWT/bitrise-step-firebase-test-labs.git
+  - BITRISE_STEP_ID: firebase-test-labs-atanas
+  - BITRISE_STEP_VERSION: "atanas"
+  - BITRISE_STEP_GIT_CLONE_URL: https://github.com/atanas-bitrise/bitrise-step-firebase-test-labs.git
   - MY_STEPLIB_REPO_FORK_GIT_URL: $MY_STEPLIB_REPO_FORK_GIT_URL
 
 workflows:
