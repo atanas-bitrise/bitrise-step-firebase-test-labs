@@ -1,250 +1,108 @@
-#
-# A couple of useful guides & docs:
-#
-# - Main Bitrise CLI docs: https://github.com/bitrise-io/bitrise/tree/master/_docs
-# - Step Development Guideline: https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md
-# - Bitrise.yml format spec: https://github.com/bitrise-io/bitrise/blob/master/_docs/bitrise-yml-format-spec.md
-# - Bitrise docs: http://devcenter.bitrise.io/
-# - Bitrise CLI guides: http://devcenter.bitrise.io/bitrise-cli/
+title: Wasabi File uploader
+summary: Upload a file to Wasabi
+description: |-
+  Bitrise Step to upload a file to Wasabi.
 
-title: |-
-  Firebase Test Labs
-summary: |
-  Automatic deployment of iOS and Android Flutter Integration tests to Firebase Test Labs 
-description: |
-  Automatic deployment of iOS and Android Flutter Integration tests to Firebase Test Labs 
-  Before using this step, ensure to go through the setup required to test your app on virtual devices
-  https://github.com/flutter/flutter/tree/main/packages/integration_test#android-device-testing
-  NOTE: To run your project's tests on an iOS device on Firebase Test Labs you must properly 
-  codesign your app in the workflow before this step is run. The documentation can be found here: 
-  https://devcenter.bitrise.io/en/code-signing/ios-code-signing/managing-ios-code-signing-files---automatic-provisioning.html
-  If you would not like to follow the documentation's guidance on using automatic code signing, you could also choose
-  to upload a proper provisioning profile for your iOS application to the Code Signing & Files tab in the workflow editor
-  on Bitrise. Then, add the "Certificate and profile installer" step (without editing the configuration) to your 
-  workflow before this step is run.
-website: https://github.com/AnthonyDadeWT/bitrise-step-firebase-test-labs
-source_code_url: https://github.com/AnthonyDadeWT/bitrise-step-firebase-test-labs
-support_url: https://github.com/AnthonyDadeWT/bitrise-step-firebase-test-labs/issues
-
-# If this step should be available only for certain project types
-# just uncomment this `project_type_tags` section and include all the
-# project types supported by the step. If the step can be used for all
-# project types then you can just remove this section.
-# If no `project_type_tags` specified (or specified as an empty array)
-# that means the step can be used for any project type.
-# You can find more information about project type tags in the Step Development Guideline:
-# https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md
-#
-project_type_tags:
-  - flutter
-  - ios
-  - android
-
-# Type tags are used for categorizing steps, for easier step discovery in Step Libraries.
-# You can find more information about type tags in the Step Development Guideline:
-# https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md
+  This Step requires a Wasabi account.
+  To register a Wasabi account, [click here](https://wasabi.com).
+website: https://github.com/atanas-bitrise/bitrise-wasabi-uploader
+source_code_url: https://github.com/atanas-bitrise/bitrise-wasabi-uploader
+support_url: https://github.com/atanas-bitrise/bitrise-wasabi-uploader/issues
 type_tags:
-  - test
   - deploy
-
-# These properties define whether a Step is run in a given Workflow or not.
-# You can find more information about this in the documentation here:
-# https://devcenter.bitrise.io/en/steps-and-workflows/developing-your-own-bitrise-step/developing-a-new-step.html#setting-conditions-for-running-the-step
-#
-# is_always_run: false
-# is_skippable: false
-# run_if: ""
-
-# Use the `deps` property to declare dependencies that you can fetch from an OS dependency manager.
-# You can find more information about this in the documentation here:
-# https://devcenter.bitrise.io/en/steps-and-workflows/developing-your-own-bitrise-step/developing-a-new-step.html#submodules-and-step-dependencies
-#
-# deps:
-#   brew:
-#   - name: cmake
-#   apt_get:
-#   - name: cmake
-
-deps:
-  brew:
-  - name: google-cloud-sdk
-  - name: flutter
-
+  - upload
+  - uploader
+is_requires_admin_user: true
 is_always_run: false
 is_skippable: false
+deps:
+  brew:
+  - name: awscli
+    bin_name: aws
+  apt_get:
+  - name: awscli
+    bin_name: aws
 run_if: ""
-
-toolkit:
-  bash:
-    entry_file: step.sh
-
-
 inputs:
-- service_account_credentials_file: 
-  opts:
-    title: "Service Account Credentials File"
-    summary: |
-      The path or HTTP URL to your [service account](https://firebase.google.com/docs/app-distribution/android/distribute-gradle#authenticate_using_a_service_account) private key JSON file.
-    description: |
-      Follow the documentation hyperlinked above to setup a service account.
+  - file_path: ""
+    opts:
+      title: "File path"
+      summary: "Path to the file to be uploaded"
+      description: ""
+      is_required: true
+  - app_slug: "$BITRISE_APP_SLUG"
+    opts:
+      title: "BITRISE's App-Slug variable (passed automatically on Bitrise)"
+      summary: ""
+      description: ""
+      is_required: true
+  - build_slug: "$BITRISE_BUILD_SLUG"
+    opts:
+      title: "BITRISE's Build-Slug variable (passed automatically on Bitrise)"
+      summary: ""
+      description: ""
+      is_required: true
+  - wasabi_access_key: ""
+    opts:
+      title: "Wasabi Access Key"
+      summary: ""
+      description: |
+        Wasabi Access Key
+      is_required: true
+      is_sensitive: true
+  - wasabi_secret_key: ""
+    opts:
+      title: "Wasabi Secret Access Key"
+      summary: ""
+      description: |
+        Wasabi Secret Access Key
+      is_required: true
+      is_sensitive: true
+  - bucket_name: ""
+    opts:
+      title: "Wasabi Bucket Name"
+      summary: ""
+      description: ""
+      is_required: true
+  - bucket_region: ""
+    opts:
+      title: "Wasabi Bucket Region"
+      summary: ""
+      description: |
+        Wasabi Bucket Region
 
-      You can avoid pushing this private key JSON file to your repository by storing the JSON contents as a secret, then in a custom script,
-      create a new file, and echo the contents of that secret into the file, and then set this input to that file path.
-    is_required: true
-    is_sensitive: true
-- project_id: 
-  opts:
-    title: "Firebase Project ID"
-    summary: |
-      Firebase Project ID. Can be found in the Firebase console, under the project name in Project settings.
-      
-      Note: this is NOT an App ID. There should only be one Project ID for your entire Firebase project, even if it includes multiple "apps".
-    is_required: true
-    is_sensitive: true
-- integration_test_path: 
-  opts:
-    title: "Path to Integration Tests"
-    summary: |
-      Path to all of the Flutter integration tests you'd like to deploy to Firebase Test Labs
-      
-      example: intgeration_test/foo.dart
-    is_required: true
-- test_ios: "false"
-  opts:
-    title: "Run Tests on iOS Device?"
-    summary: "Codesigning required."
-    description: |
-       NOTE: To run your project's tests on an iOS device on Firebase Test Labs you must properly 
-       codesign your app in the workflow before this step is run. The documentation can be found here: 
-       https://devcenter.bitrise.io/en/code-signing/ios-code-signing/managing-ios-code-signing-files---automatic-provisioning.html
-    value_options:
-    - "true"
-    - "false"
-    summary: |
-      If you'd like to run your tests on an iOS device, set this to true. Otherwise set it to false
-- test_android: "true"
-  opts:
-    title: "Run Tests on Android Device?"
-    value_options:
-    - "true"
-    - "false"
-    summary: |
-      If you'd like to run your tests on an Android device, set this to true. Otherwise set it to false
-- build_flavor:
-  opts:
-    title: Build Flavor
-    summary: |
-      Specify a specific build flavor you'd like to use to build your project.
+        If you use default s3 region (us-east-1), you can leave it empty,
+        otherwise you should provide this input.
+  - path_in_bucket: "bitrise_$BITRISE_APP_SLUG/${BITRISE_BUILD_TRIGGER_TIMESTAMP}_build_${BITRISE_BUILD_SLUG}"
+    opts:
+      title: "Wasabi File Path In Bucket"
+      summary: ""
+      description: |-
+        Optional, if no value specified then the default will be:
 
-      This should only be used on projects that have already setup flavors, and you use --flavor <flavor> to build or run your project.
-
-      https://docs.flutter.dev/deployment/flavors
-    is_required: false
-
-## iOS Configuration Category ##
-- deployment_target: "17.0"
-  opts:
-    category: iOS Configuration
-    title: iOS Deployment Target
-    summary: iOS Deployment Target, found under the "Info" tab after selecting the Runner Project
-    is_required: true
-- ios_configuration: Release
-  opts:
-    category: iOS Configuration
-    title: Xcode Build Configuration
-    summary: |-
-      Xcode Build Configuration.
-
-      If not specified, the default Build Configuration will be used.
-      Use xcodebuild -list to see available configurations for your project.
-      The input value sets xcodebuild's `-configuration` option.
-    is_required: true
-- scheme: Runner
-  opts:
-    category: iOS Configuration
-    title: Schema
-    summary: Specify an Xcode Schema you'd like to use for 
-    description: |
-      Specify an Xcode Schema you'd like to use for iOS.
-      Run xcodebuild -list in the iOS directory to list available schemes for your project.
-      By default, this is set to Runner.
-
-      example: Runner, dev, release, etc
-    is_required: true
-- output_path: ../build/ios_integ
-  opts:
-    category: iOS Configuration
-    title: Output Path
-    summary: The path to the folder where the iOS integration executable will output
-    is_required: true
-- product_path: build/ios_integ/Build/Products
-  opts:
-    category: iOS Configuration
-    title: Product Path
-    summary: "The path to the zip folder containing a .xctestrun and a folder containing the .app to be deployed"
-    is_required: true
-- locale: en_US
-  opts:
-    category: iOS Configuration
-    title: Locale
-    summary: |
-      Specify the Locale to test on 
-      example: "en_US", "fr_FR"
-      [List of locales](https://help.sap.com/docs/SAP_BUSINESSOBJECTS_BUSINESS_INTELLIGENCE_PLATFORM/09382741061c40a989fae01e61d54202/46758c5e6e041014910aba7db0e91070.html)
-    is_required: true
-- simulator_model: iphone11pro
-  opts:
-    category: iOS Configuration
-    title: Specify Device
-    summary: Specify the device the tests will run on
-    is_required: true
-- orientation: portrait
-  opts:
-    category: iOS Configuration
-    title: Orientation
-    summary: Specify the device orientation the test runs against
-    is_required: true
-- workspace: Runner.xcworkspace
-  opts:
-    category: iOS Configuration
-    title: xcworkspace File
-    summary: Specify the iOS workspace
-    is_required: true
-- config_file_path: Flutter/Release.xcconfig
-  opts:
-    category: iOS Configuration
-    title: Path to .xcconfig
-    summary: The path that points to the .xcconfig you'd like to use
-    is_required: true
-- xcode_version: 15.0
-  opts:
-    category: iOS Configuration
-    title: "Xcode Version"
-    summary: Specify a version of Xcode
-    is_required: true
-
+            bitrise_$BITRISE_APP_SLUG/${BITRISE_BUILD_TRIGGER_TIMESTAMP}_build_${BITRISE_BUILD_SLUG}
+  - file_access_level: "public-read"
+    opts:
+      title: "Wasabi file access level"
+      value_options:
+        - "private"
+        - "public-read"
+      is_required: true
 outputs:
-- EXAMPLE_STEP_OUTPUT:
-  opts:
-    title: "Example Step Output"
-    summary: Summary. No more than 2-3 sentences.
-    description: |
-      Description of this output.
+  - WASABI_UPLOAD_STEP_URL: ""
+    opts:
+      title: "Wasabi Deploy URL"
+      summary: "Url generated for the uploaded file"
+      description: ""
+      is_expand: false
+      is_required: true
+      is_dont_change_value: true
+  - WASABI_UPLOAD_STEP_STATUS: ""
+    opts:
+      title: "Wasabi Deploy result ('success' or 'failed')"
+      summary: ""
+      description: ""
+      is_expand: false
+      is_required: true
+      is_dont_change_value: true
 
-      Can be Markdown formatted text.
-
-
-
-##
-
-##- example_step_input: 
-##    opts:
- ####      summary: Summary. No more than 2-3 sentences.
-##      description: |
-##        Description of this input.
-
-##        Can be Markdown formatted text.
-##      is_expand: true
-###      value_options: []
-
-###
